@@ -50,16 +50,15 @@ public class ListMonad<A> implements Monad<A>, List<A> {
 
     @Override
     public <B> ListMonad<B> getAppliedBy(Applicative<Function<A, B>> af) {
-        List<B> ans = new ArrayList<>();
         if(af instanceof ListMonad<?>) {
             ListMonad<Function<A, B>> fs = (ListMonad<Function<A, B>>) af;
-            for(Function<A, B> f: fs) {
-                for(A a: this) {
-                    ans.add(f.apply(a));
-                }
-            }
+            return
+                    fs.bind(f ->
+                    this.bind(a ->
+                    ListMonad.of(f.apply(a))));
+        } else {
+            throw new IllegalArgumentException("af must be a ListMonad");
         }
-        return new ListMonad<>(ans);
     }
 
     @Override

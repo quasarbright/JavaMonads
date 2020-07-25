@@ -61,13 +61,10 @@ public class Maybe<A> implements Monad<A> {
     public <B> Maybe<B> getAppliedBy(Applicative<Function<A, B>> af) {
         if(af instanceof Maybe<?>) {
             Maybe<Function<A, B>> mf = (Maybe<Function<A, B>>) af;
-            if(this.isPresent() && mf.isPresent()) {
-                Function<A, B> f = mf.get();
-                A a = this.get();
-                return just(f.apply(a));
-            } else {
-                return nothing();
-            }
+            return
+                    mf.bind(f ->
+                    this.bind(a ->
+                    just(f.apply(a))));
         } else {
             throw new IllegalArgumentException("Maybe can only be applied by Maybes");
         }
